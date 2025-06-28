@@ -11,8 +11,8 @@ O script principal é o `main.py`, que gera grafos de diferentes tipos (aleatór
 1. **Clone ou baixe o repositório**:
 
    ```bash
-   git clone <URL_DO_REPOSITORIO>
-   cd <PASTA_DO_PROJETO>
+   git clone https://github.com/PedroLucas63/betweenness-centrality
+   cd betweenness-centrality
    ```
 
 2. **Crie e ative um ambiente virtual (recomendado)**:
