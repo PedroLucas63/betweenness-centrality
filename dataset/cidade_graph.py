@@ -35,7 +35,6 @@ def load_natal_graph(weight_type: str = 'none', directed: bool = True) -> nx.Gra
     for u, v, k, data in G_multi.edges(keys=True, data=True):
         # Define o peso
         weight = data.get(weight_type, 1)
-        print(data)
 
         # Se já existe uma aresta entre u-v, mantém a de menor peso
         if G.has_edge(u, v):
