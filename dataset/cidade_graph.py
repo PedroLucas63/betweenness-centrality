@@ -23,7 +23,7 @@ def load_natal_graph(weight_type: str='none') -> nx.Graph:
         A escolha do tipo de peso afeta algoritmos como caminho mínimo ou análise de centralidade,
         pois altera a métrica utilizada nas arestas.
     """
-    G_nx = ox.graph_from_place('Lagoa Nova, Natal, Rio Grande do Norte, Brazil', network_type='drive')
+    G_nx = ox.graph_from_place('Natal, Rio Grande do Norte, Brazil', network_type='drive')
     
     if weight_type != 'none':
         if weight_type == 'bearings':
