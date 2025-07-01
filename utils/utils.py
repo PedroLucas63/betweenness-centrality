@@ -57,3 +57,17 @@ def remove_nodes(G: glib.Graph, nodes: list) -> glib.Graph:
       G_copy.remove_node(node)
 
    return G_copy
+
+def clip(x: float, min_val: float, max_val: float) -> float:
+   """
+   Limita o valor de x entre min_val e max_val
+
+   Args:
+       x (float): O valor a ser limitado
+       min_val (float): O valor mínimo
+       max_val (float): O valor máximo
+
+   Returns:
+       float: O valor limitado
+   """
+   return max(min(x, max_val), min_val)

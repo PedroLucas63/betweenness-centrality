@@ -77,26 +77,26 @@ def plot_SIR(S_before, I_before, R_before, S_after, I_after, R_after, save_path:
 
 import matplotlib.pyplot as plt
 
-def plot_times(nomes, tempos_ms, save_path: str = None):
+def plot_times(nomes, tempos, save_path: str = None):
     """
     Gera um gráfico de barras comparando o tempo de execução de diferentes algoritmos.
 
     Args:
         nomes (list of str): Lista com os nomes dos algoritmos (ex: ["Brandes", "Naive", "Optimizado"]).
-        tempos_ms (list of float): Tempos de execução em milissegundos.
+        tempos (list of float): Tempos de execução em milissegundos.
         save_path (str, optional): Caminho para salvar o gráfico. Se None, o gráfico será exibido.
     """
-    assert len(nomes) == len(tempos_ms), "Listas 'nomes' e 'tempos_ms' devem ter o mesmo tamanho."
+    assert len(nomes) == len(tempos), "Listas 'nomes' e 'tempos' devem ter o mesmo tamanho."
 
     plt.figure(figsize=(8, 5))
-    bars = plt.bar(nomes, tempos_ms, color=['#4e79a7', '#f28e2b', '#e15759'])
+    bars = plt.bar(nomes, tempos, color=['#4e79a7', '#f28e2b', '#e15759'])
 
     # Adiciona os valores acima das barras
-    for bar, tempo in zip(bars, tempos_ms):
+    for bar, tempo in zip(bars, tempos):
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2, yval + 2, f"{tempo:.1f} ms", ha='center', va='bottom', fontsize=10)
+        plt.text(bar.get_x() + bar.get_width()/2, yval + 2, f"{tempo:.1f} s", ha='center', va='bottom', fontsize=10)
 
-    plt.ylabel("Tempo de execução (ms)")
+    plt.ylabel("Tempo de execução (s)")
     plt.title("Comparação de Tempo de Algoritmos")
     plt.grid(axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()

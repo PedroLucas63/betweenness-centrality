@@ -7,11 +7,19 @@ import time
 import random
 
 # Baixa o grafo de Natal-RN e salva a imagem
-G = load_natal_graph('lengths')
+G = load_natal_graph('length')
 plot_graph(G, 'imgs/natal.png', figsize=(20, 20), node_size=10)
 
 # Converte para graph_lib
 G = netx_to_graph_lib(G)
+
+weight = 0
+edges = 0
+for u, v, attrs in G.edges():
+   weight += attrs['weight']
+   edges += 1
+
+print(f'Grafo de Natal-RN com peso médio de {weight // edges}.')
 
 # Calcula a centralidade de intermediação e alavanca o tempo de execução
 start_time = time.time()

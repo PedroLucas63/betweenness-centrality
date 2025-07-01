@@ -1,6 +1,7 @@
 import lib.graph_lib as glib
 import random
 from tqdm import tqdm
+from utils.utils import clip
 
 def simulate_SI(graph: glib.Graph, steps: int=20, beta: float=0.3, verbose: bool=False):
     """
@@ -62,8 +63,8 @@ def simulate_SIR(graph: glib.Graph, beta: float=0.3, gamma: float=0.1, steps: in
     
     status = {node: 'S' for node in nodes}
 
-    # Começa com 1% dos nó infectado aleatório
-    k = max(1, int(len(nodes) * 0.01))
+    # Começa com 0.1% dos nó infectado aleatório
+    k = max(1, int(len(nodes) * 0.001))
     infected = random.sample(nodes, k)
     
     for node in infected:
@@ -81,7 +82,11 @@ def simulate_SIR(graph: glib.Graph, beta: float=0.3, gamma: float=0.1, steps: in
         for node in nodes:
             if status[node] == 'I':
                 for neighbor in graph[node]:
-                    if status[neighbor] == 'S' and random.random() < beta:
+                    weight = graph[node][neighbor]['weight']
+                    x = -0.0001189*weight**2 + 0.0002378*weight + 0.29988
+                    prob = clip(x, 0.1, beta)
+                    
+                    if status[neighbor] == 'S' and random.random() < prob:
                         new_status[neighbor] = 'I'
 
                 if random.random() < gamma:
