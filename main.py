@@ -7,7 +7,7 @@ import time
 import random
 
 # Baixa o grafo de Natal-RN e salva a imagem
-G = load_natal_graph('lengths')
+G = load_natal_graph('length')
 plot_graph(G, 'imgs/natal.png', figsize=(20, 20), node_size=10)
 
 # Converte para graph_lib
