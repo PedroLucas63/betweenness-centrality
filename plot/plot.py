@@ -75,8 +75,6 @@ def plot_SIR(S_before, I_before, R_before, S_after, I_after, R_after, save_path:
     else:
         plt.show()
 
-import matplotlib.pyplot as plt
-
 def plot_times(nomes, tempos_ms, save_path: str = None):
     """
     Gera um gráfico de barras comparando o tempo de execução de diferentes algoritmos.
@@ -94,9 +92,9 @@ def plot_times(nomes, tempos_ms, save_path: str = None):
     # Adiciona os valores acima das barras
     for bar, tempo in zip(bars, tempos_ms):
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2, yval + 2, f"{tempo:.1f} ms", ha='center', va='bottom', fontsize=10)
+        plt.text(bar.get_x() + bar.get_width()/2, yval + 2, f"{tempo:.1f} s", ha='center', va='bottom', fontsize=10)
 
-    plt.ylabel("Tempo de execução (ms)")
+    plt.ylabel("Tempo de execução (s)")
     plt.title("Comparação de Tempo de Algoritmos")
     plt.grid(axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()

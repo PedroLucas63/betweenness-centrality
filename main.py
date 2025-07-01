@@ -13,6 +13,9 @@ plot_graph(G, 'imgs/natal.png', figsize=(20, 20), node_size=10)
 # Converte para graph_lib
 G = netx_to_graph_lib(G)
 
+for u, v, attrs in G.edges():
+   print(f'{u} -> {v}: {attrs}')
+
 # Calcula a centralidade de intermediação e alavanca o tempo de execução
 start_time = time.time()
 cb = glib.brandes(G)
