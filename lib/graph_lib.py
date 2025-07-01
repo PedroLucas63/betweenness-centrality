@@ -19,6 +19,18 @@ class Graph:
          node (hashable): Vértice a ser adicionado.
       """
       self._adjacency_list.setdefault(node, {})
+      
+      
+   def remove_node(self, node):
+      """
+      Remove um vértice do grafo.
+
+      Args:
+         node (hashable): Vértice a ser removido.
+      """
+      self._adjacency_list.pop(node, None)
+      for neighbors in self._adjacency_list.values():
+         neighbors.pop(node, None)
 
    def add_edge(self, node1, node2, weight=1.0):
       """ 
@@ -158,3 +170,6 @@ def brandes(graph):
             centrality[w] += contribution[w]
             
    return centrality
+
+def degree_centrality(graph: Graph) -> dict:
+   return {v: len(graph[v]) for v in graph.nodes()}

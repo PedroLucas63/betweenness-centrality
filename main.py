@@ -1,123 +1,57 @@
-import graph_lib as glib
-import networkx as nx
+from dataset.cidade_graph import load_natal_graph
+from utils.utils import netx_to_graph_lib, remove_nodes
+from plot.plot import plot_graph, plot_times, plot_SIR_comparison
+from simulations.simulations import simulate_SIR
+import lib.graph_lib as glib
+import time
 import random
 
-def netx_to_graph_lib(G: nx.Graph) -> glib.Graph:
-   """
-   Converte um networkx.Graph para um graph_lib.Graph
+# Baixa o grafo de Natal-RN e salva a imagem
+G = load_natal_graph('lengths')
+plot_graph(G, 'imgs/natal.png', figsize=(20, 20), node_size=10)
 
-   Args:
-       G (nx.Graph): Um grafo do networkx
+# Converte para graph_lib
+G = netx_to_graph_lib(G)
 
-   Returns:
-       glib.Graph: Um grafo do graph_lib
-   """
-   graph = glib.Graph(G.is_directed())
-   for u in G.nodes():
-      graph.add_node(u)
-   for u, v in G.edges():
-      graph.add_edge(u, v, weight=G[u][v]['weight'])
+# Calcula a centralidade de intermediação e alavanca o tempo de execução
+start_time = time.time()
+cb = glib.brandes(G)
+end_time = time.time()
+cb_time = end_time - start_time
 
-   return graph
+# Calcula a centralidade de grau e alavanca o tempo de execução
+start_time = time.time()
+dc = glib.degree_centrality(G)
+end_time = time.time()
+dc_time = end_time - start_time
 
-def graph_lib_to_netx(G: glib.Graph) -> nx.Graph:
-   """
-   Converte um graph_lib.Graph para um networkx.Graph
+# Imprime a comparação de tempos
+algorithms = ['Brandes', 'Grau']
+times = [cb_time, dc_time]
+plot_times(algorithms, times, 'imgs/times.png')
 
-   Args:
-       G (glib.Graph): Um grafo do graph_lib
+# Pega os 10% de vértices mais centrais dos dois algoritmos e aleatórios
+k = max(1, len(G.nodes()) // 10)
+cb_top = sorted(cb.items(), key=lambda x: x[1], reverse=True)[:k]
+dc_top = sorted(dc.items(), key=lambda x: x[1], reverse=True)[:k]
+random_top = random.sample(G.nodes(), k)
 
-   Returns:
-       nx.Graph: Um grafo do networkx
-   """
-   G = nx.Graph() if not G.is_directed() else nx.DiGraph()
-      
-   for u in G.nodes():
-      G.add_node(u)
-   for u, v in G.edges():
-      G.add_edge(u, v, weight=G[u][v]['weight'])
+# Remove os nós mais centrais dos algoritmos
+graphs = {
+   'Original': G,
+   'Brandes': remove_nodes(G, [x[0] for x in cb_top]),
+   'Grau': remove_nodes(G, [x[0] for x in dc_top]),
+   'Random': remove_nodes(G, random_top)
+}
 
-   return G
+# Define o dicionário de resultados
+results = {}
 
-def test(G: nx.Graph) -> bool:
-   """
-   Função de teste dos algoritmos de centralidade de intermediação
-
-   Args:
-       G (nx.Graph): Um grafo do networkx
-
-   Returns:
-       bool: True se os algoritmos de centralidade de intermediação forem equivalentes
-   """
-   G_own = netx_to_graph_lib(G)
+# Simula o modelo SIR em todos os grafos
+for name, graph in graphs.items():
+   print(f"Simulando {name}")
+   S_count, I_count, R_count = simulate_SIR(graph, steps=500, verbose=True)
+   results[name] = {'S': S_count, 'I': I_count, 'R': R_count}
    
-   cb_own = glib.brandes(G_own)
-   cb_nx = nx.betweenness_centrality(G, normalized=False, weight='weight')
-   
-   k_top = max(1, len(G.nodes()) // 10)
-   top_own = sorted(cb_own.items(), key=lambda x: x[1], reverse=True)[:k_top]
-   top_nx = sorted(cb_nx.items(), key=lambda x: x[1], reverse=True)[:k_top]
-   
-   for i in range(k_top):
-      if top_own[i][0] != top_nx[i][0]:
-         return False
-   return True
-
-if __name__ == '__main__':
-   print("=== Iniciando testes ===")
-
-   # Define tipos de grafos e geradores
-   graph_tests = {
-      "Grafo Aleatório": [
-         lambda: nx.erdos_renyi_graph(50, 0.1),
-         lambda: nx.erdos_renyi_graph(50, 0.2),
-         lambda: nx.erdos_renyi_graph(100, 0.3)
-      ],
-      "Grafo Planar (Grid 10x10)": [
-         lambda: nx.grid_2d_graph(10, 10),
-         lambda: nx.grid_2d_graph(8, 12),
-         lambda: nx.grid_2d_graph(12, 12)
-      ],
-      "Grafo Ciclo": [
-         lambda: nx.cycle_graph(30),
-         lambda: nx.cycle_graph(25),
-         lambda: nx.cycle_graph(45)
-      ],
-      "Grafo Cadeia": [
-         lambda: nx.path_graph(30),
-         lambda: nx.path_graph(40),
-         lambda: nx.path_graph(100)
-      ],
-      "Grafo Completo": [
-         lambda: nx.complete_graph(20),
-         lambda: nx.complete_graph(15),
-         lambda: nx.complete_graph(35)
-      ],
-      "Grafo Barabasi-Albert": [
-         lambda: nx.barabasi_albert_graph(50, 3),
-         lambda: nx.barabasi_albert_graph(60, 2),
-         lambda: nx.barabasi_albert_graph(80, 4)
-      ]
-   }
-
-   total_success = 0
-   total_tests = 0
-
-   for gtype, gens in graph_tests.items():
-      print(f"- {gtype}:")
-      success_count = 0
-      for idx, gen in enumerate(gens, start=1):
-         G = gen()
-         for u, v in G.edges():
-               G[u][v]['weight'] = random.randint(1, 10)
-         ok = test(G)
-         total_tests += 1
-         if ok:
-               success_count += 1
-               print(f"  - Grafo {idx}: \033[92mSUCCESS\033[0m")
-         else:
-               print(f"  - Grafo {idx}: \033[91mERROR\033[0m")
-      print(f"  - Result: [{success_count}/{len(gens)}]")
-      total_success += success_count
-
-   print(f"\n- Resultado final: [{total_success}/{total_tests}]")
+# Plota a evolução da infecção em todos os grafos
+plot_SIR_comparison(results, 'imgs')
