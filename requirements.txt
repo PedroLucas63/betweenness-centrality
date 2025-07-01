@@ -1,1 +1,19 @@
 networkx==3.5
+# NetworkX: Biblioteca para criação, manipulação e análise de grafos (redes).
+# Permite trabalhar com grafos de forma programática: criar nós, arestas, calcular métricas de centralidade, executar algoritmos como Dijkstra, etc.
+
+osmnx
+# OSMnx: Ferramenta para baixar e trabalhar com dados de redes urbanas a partir do OpenStreetMap.
+# Permite baixar automaticamente grafos de ruas de cidades reais (como Natal), com informações geográficas e atributos como comprimento de vias.
+
+geopandas
+# GeoPandas: Extensão da biblioteca pandas para manipulação de dados geoespaciais (geodataframes).
+# Muito usada internamente pelo OSMnx para processar shapes e regiões geográficas (como limites de bairros ou cidades).
+
+matplotlib
+# Matplotlib: Biblioteca para geração de gráficos e visualizações em Python.
+# No seu projeto, usada para plotar o número de infectados ao longo das iterações da simulação de pandemia.
+
+shapely
+# Shapely: Biblioteca para operações geométricas com objetos como pontos, linhas e polígonos.
+# Usada internamente pelo OSMnx e GeoPandas para lidar com geometrias de ruas, limites de regiões e para filtros espaciais.
