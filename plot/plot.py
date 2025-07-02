@@ -1,4 +1,6 @@
+import matplotlib
 import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 import networkx as nx
 import osmnx as ox
 import os
@@ -168,7 +170,7 @@ def plot_graph(
         node_color (str): Cor dos nós.
         with_labels (bool): Exibir rótulos nos nós.
     """
-    is_geographic = nx.get_node_attributes(G, "x") and nx.get_node_attributes(G, "y")
+    is_geographic = 'x' in G.nodes[list(G.nodes)[0]] and 'y' in G.nodes[list(G.nodes)[0]]
 
     if is_geographic:
         # Grafo georreferenciado (OSMnx)
@@ -192,7 +194,7 @@ def plot_graph(
         # Grafo comum (sem coordenadas geográficas)
         # Escolhe o layout adequado
         if layout == "spring":
-            pos = nx.spring_layout(G, seed=42)
+            pos = nx.spring_layout(G, seed=42, iterations=1)
         elif layout == "circular":
             pos = nx.circular_layout(G)
         elif layout == "kamada_kawai":
@@ -213,6 +215,100 @@ def plot_graph(
             font_size=8
         )
         plt.title("Visualização do Grafo")
+        plt.tight_layout()
+
+        if nome_arquivo:
+            plt.savefig(nome_arquivo, dpi=300)
+            plt.close()
+        else:
+            plt.show()
+            
+def plot_graph_with_removed(
+    G: nx.Graph,
+    removed_nodes: list,
+    nome_arquivo: str = None,
+    layout: str = "spring",  # apenas para grafos não georreferenciados
+    figsize: tuple = (10, 8),
+    node_size: int = 30,
+    edge_color: str = "white",
+    node_color: str = "skyblue",
+    removed_node_color: str = "red",
+    with_labels: bool = False
+):
+    """
+    Plota um grafo destacando visualmente os nós removidos.
+
+    Args:
+        G (nx.Graph): O grafo original.
+        removed_nodes (list): Lista de nós removidos para destaque.
+        nome_arquivo (str, opcional): Caminho para salvar o gráfico. Se None, apenas exibe.
+        layout (str): Tipo de layout (para grafos comuns).
+        figsize (tuple): Tamanho da figura.
+        node_size (int): Tamanho dos nós.
+        edge_color (str): Cor das arestas.
+        node_color (str): Cor padrão dos nós.
+        removed_node_color (str): Cor dos nós removidos.
+        with_labels (bool): Exibir rótulos nos nós.
+    """
+    is_geographic = 'x' in G.nodes[list(G.nodes)[0]] and 'y' in G.nodes[list(G.nodes)[0]]
+
+    if is_geographic:
+        # Georreferenciado: precisamos separar os nós
+        node_colors = []
+        for node in G.nodes:
+            if node in removed_nodes:
+                node_colors.append(removed_node_color)
+            else:
+                node_colors.append(node_color)
+
+        fig, ax = ox.plot_graph(
+            G,
+            node_size=node_size,
+            edge_color=edge_color,
+            node_color=node_colors,
+            bgcolor="black",
+            show=False,
+            close=False,
+            figsize=figsize
+        )
+        if nome_arquivo:
+            fig.savefig(nome_arquivo, dpi=300)
+            plt.close(fig)
+        else:
+            plt.show()
+
+    else:
+        # Grafo comum (abstrato)
+        if layout == "spring":
+            pos = nx.spring_layout(G, seed=42, iterations=10)
+        elif layout == "circular":
+            pos = nx.circular_layout(G)
+        elif layout == "kamada_kawai":
+            pos = nx.kamada_kawai_layout(G)
+        elif layout == "spectral":
+            pos = nx.spectral_layout(G)
+        else:
+            raise ValueError(f"Layout '{layout}' não é suportado.")
+
+        # Definir a cor de cada nó
+        node_colors = []
+        for node in G.nodes:
+            if node in removed_nodes:
+                node_colors.append(removed_node_color)
+            else:
+                node_colors.append(node_color)
+
+        plt.figure(figsize=figsize)
+        nx.draw(
+            G,
+            pos,
+            with_labels=with_labels,
+            node_size=node_size,
+            node_color=node_colors,
+            edge_color=edge_color,
+            font_size=8
+        )
+        plt.title("Visualização do Grafo com Nós Removidos Destacados")
         plt.tight_layout()
 
         if nome_arquivo:

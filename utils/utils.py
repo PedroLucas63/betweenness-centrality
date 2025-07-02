@@ -4,22 +4,34 @@ from copy import deepcopy
 
 def netx_to_graph_lib(G: nx.Graph) -> glib.Graph:
    """
-   Converte um networkx.Graph para um graph_lib.Graph
+   Converte um networkx.Graph (ou DiGraph/MultiDiGraph) para um graph_lib.Graph
 
    Args:
-       G (nx.Graph): Um grafo do networkx
+      G (nx.Graph): Um grafo do networkx (pode ser dirigido ou multigrafo)
 
    Returns:
-       glib.Graph: Um grafo do graph_lib
+      glib.Graph: Um grafo do graph_lib, com direção e pesos preservados
    """
    graph = glib.Graph(G.is_directed())
+
+   # Adiciona os nós
    for u in G.nodes():
       graph.add_node(u)
-   for u, v in G.edges():
-       weight = G[u][v]['weight'] if 'weight' in G[u][v] else 1.0
-       graph.add_edge(u, v, weight=weight)
+
+   # Verifica se é multigrafo para iterar com chave
+   if G.is_multigraph():
+      # G.edges(keys=True, data=True) retorna u,v,k,data
+      for u, v, k, data in G.edges(keys=True, data=True):
+         weight = data.get('weight', 1.0)
+         graph.add_edge(u, v, weight=weight)
+   else:
+      # Para grafos simples
+      for u, v, data in G.edges(data=True):
+         weight = data.get('weight', 1.0)
+         graph.add_edge(u, v, weight=weight)
 
    return graph
+
 
 def graph_lib_to_netx(G: glib.Graph) -> nx.Graph:
    """

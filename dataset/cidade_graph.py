@@ -1,47 +1,43 @@
 import osmnx as ox
 import networkx as nx
 
-def load_natal_graph(weight_type: str = 'none', directed: bool = True) -> nx.Graph:
+def load_natal_graph(weight_type: str = 'none') -> nx.MultiDiGraph:
     """
     Carrega o grafo de Natal-RN com pesos definidos no atributo 'weight'.
 
     Args:
         weight_type (str): 'length', 'travel_time', etc.
-        directed (bool): Se True, retorna um DiGraph; senão, Graph (não-direcionado)
 
     Returns:
-        nx.Graph or nx.DiGraph: Grafo com uma única aresta entre pares de nós.
+        nx.MultiDiGraph: Grafo multiaresta com dados geográficos completos e atributo 'weight' definido.
     """
     place = 'Natal, Rio Grande do Norte, Brazil'
-    G_multi = ox.graph_from_place(place, network_type='drive')
+    G = ox.graph_from_place(place, network_type='drive')
 
-    # Etapa 1: adiciona atributos
     if weight_type != 'none':
         if weight_type == 'bearing':
-            G_multi = ox.bearing.add_edge_bearings(G_multi)
+            G = ox.bearing.add_edge_bearings(G)
         elif weight_type == 'length':
-            G_multi = ox.distance.add_edge_lengths(G_multi)
+            G = ox.distance.add_edge_lengths(G)
         elif weight_type == 'speed_kph':
-            ox.distance.add_edge_lengths(G_multi)
-            G_multi = ox.routing.add_edge_speeds(G_multi)
+            ox.distance.add_edge_lengths(G)
+            G = ox.routing.add_edge_speeds(G)
         elif weight_type == 'travel_time':
-            ox.distance.add_edge_lengths(G_multi)
-            ox.routing.add_edge_speeds(G_multi)
-            G_multi = ox.routing.add_edge_travel_times(G_multi)
+            ox.distance.add_edge_lengths(G)
+            ox.routing.add_edge_speeds(G)
+            G = ox.routing.add_edge_travel_times(G)
 
-    # Etapa 2: cria grafo simples (DiGraph ou Graph)
-    G = nx.DiGraph() if directed else nx.Graph()
+        # Agora define 'weight' para cada aresta
+        for u, v, k, data in G.edges(keys=True, data=True):
+            if weight_type in data:
+                data['weight'] = data[weight_type]
+            else:
+                data['weight'] = 1  # valor padrão se não existir o atributo escolhido
 
-    for u, v, k, data in G_multi.edges(keys=True, data=True):
-        # Define o peso
-        weight = data.get(weight_type, 1)
-
-        # Se já existe uma aresta entre u-v, mantém a de menor peso
-        if G.has_edge(u, v):
-            if weight < G[u][v]['weight']:
-                G[u][v].update(weight=weight)
-        else:
-            G.add_edge(u, v, weight=weight)
+    else:
+        # Se 'none', atribui peso padrão 1 em todas as arestas
+        for u, v, k, data in G.edges(keys=True, data=True):
+            data['weight'] = 1
 
     return G
 
