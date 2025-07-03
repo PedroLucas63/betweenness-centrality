@@ -77,27 +77,28 @@ def plot_SIR(S_before, I_before, R_before, S_after, I_after, R_after, save_path:
     else:
         plt.show()
 
-def plot_times(nomes, tempos, save_path: str = None):
+def plot_bars(names, values, ylabel, title, save_path: str = None):
     """
-    Gera um gráfico de barras comparando o tempo de execução de diferentes algoritmos.
+    Gera um gráfico de barras comparando de diferentes opções.
 
     Args:
-        nomes (list of str): Lista com os nomes dos algoritmos (ex: ["Brandes", "Naive", "Optimizado"]).
-        tempos (list of float): Tempos de execução em milissegundos.
+        names (list of str): Lista com os nomes das barras.
+        values (list of float): Valores de cada barra.
+        title (str): Título do gráfico.
         save_path (str, optional): Caminho para salvar o gráfico. Se None, o gráfico será exibido.
     """
-    assert len(nomes) == len(tempos), "Listas 'nomes' e 'tempos' devem ter o mesmo tamanho."
+    assert len(names) == len(values), "Listas 'names' e 'values' devem ter o mesmo tamanho."
 
     plt.figure(figsize=(8, 5))
-    bars = plt.bar(nomes, tempos, color=['#4e79a7', '#f28e2b', '#e15759'])
+    bars = plt.bar(names, values, color=['#4e79a7', '#f28e2b', '#e15759'])
 
     # Adiciona os valores acima das barras
-    for bar, tempo in zip(bars, tempos):
+    for bar, value in zip(bars, values):
         yval = bar.get_height()
-        plt.text(bar.get_x() + bar.get_width()/2, yval + 2, f"{tempo:.1f} s", ha='center', va='bottom', fontsize=10)
+        plt.text(bar.get_x() + bar.get_width()/2, yval + 2, f"{value:.1f}", ha='center', va='bottom', fontsize=10)
 
-    plt.ylabel("Tempo de execução (s)")
-    plt.title("Comparação de Tempo de Algoritmos")
+    plt.ylabel(ylabel)
+    plt.title(title)
     plt.grid(axis='y', linestyle='--', alpha=0.5)
     plt.tight_layout()
 
@@ -108,21 +109,22 @@ def plot_times(nomes, tempos, save_path: str = None):
 
 def plot_SIR_comparison(results: dict, path_dir: str = None):
     """
-    Gera 3 gráficos comparando as curvas S, I e R entre múltiplos grafos.
+    Gera 4 gráficos comparando as curvas S, I, R e I_total entre múltiplos grafos.
 
     Args:
-        results (dict): Dicionário com os nomes dos grafos como chave e um dict com listas 'S', 'I', 'R' como valor.
+        results (dict): Dicionário com os nomes dos grafos como chave e um dict com listas 'S', 'I', 'R', 'I_total' como valor.
         path_dir (str, opcional): Diretório onde as imagens serão salvas. Se None, apenas exibe.
     """
     if path_dir:
         os.makedirs(path_dir, exist_ok=True)
 
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b']  # até 6 grafos
-    metrics = ['S', 'I', 'R']
+    metrics = ['S', 'I', 'R', 'I_total']
     titles = {
         'S': "Comparação de Suscetíveis (S)",
         'I': "Comparação de Infectados (I)",
-        'R': "Comparação de Recuperados (R)"
+        'R': "Comparação de Recuperados (R)",
+        'I_total': "Comparação de Infectados Totais",
     }
 
     for metric in metrics:

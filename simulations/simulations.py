@@ -47,6 +47,7 @@ def simulate_SIR(graph: glib.Graph,
                  beta: float = 0.3,
                  gamma: float = 0.1,
                  steps: int = 50,
+                 infected_nodes: list[str] = None,
                  mean_weight: float = 1,
                  verbose: bool = False,
                  min_days_infected: int = 3,
@@ -75,8 +76,13 @@ def simulate_SIR(graph: glib.Graph,
     days_infected = {}
     days_recovered = {}
 
-    k = max(1, int(len(nodes) * 0.001))
-    infected = random.sample(nodes, k)
+    if not infected_nodes:
+        k = max(1, int(len(nodes) * 0.001))
+        infected = random.sample(nodes, k)
+    else:
+        k = len(infected_nodes)
+        infected = infected_nodes
+        
     for node in infected:
         status[node] = 'I'
         days_infected[node] = 0
@@ -84,6 +90,7 @@ def simulate_SIR(graph: glib.Graph,
     S_count = [len(nodes) - k]
     I_count = [k]
     R_count = [0]
+    I_total_count = [k]
 
     progress = tqdm(range(1, steps + 1),
                     desc="Simulação de Pandemia - Evolução da Infecção",
@@ -93,16 +100,18 @@ def simulate_SIR(graph: glib.Graph,
         new_status = status.copy()
         new_days_infected = days_infected.copy()
         new_days_recovered = days_recovered.copy()
+        infected_count = I_total_count[-1]
 
         for node in nodes:
             if status[node] == 'I':
                 # Tenta infectar vizinhos
                 for neighbor in graph[node]:
                     weight = graph[node][neighbor]['weight']
-                    prob = clip(beta * (mean_weight / weight), 0.075, beta)
+                    prob = clip(beta * (mean_weight / (weight + 1e-6)), 0.075, beta)
                     if status[neighbor] == 'S' and random.random() < prob:
                         new_status[neighbor] = 'I'
                         new_days_infected[neighbor] = 0
+                        infected_count += 1
 
                 # Atualiza tempo infectado
                 new_days_infected[node] += 1
@@ -132,10 +141,11 @@ def simulate_SIR(graph: glib.Graph,
         S_count.append(S)
         I_count.append(I)
         R_count.append(R)
+        I_total_count.append(infected_count)
 
         progress.set_description(f"Iteração {step} -> S: {S}, I: {I}, R: {R}")
 
         if S == 0 and I == 0:
             break
 
-    return S_count, I_count, R_count
+    return S_count, I_count, R_count, I_total_count
