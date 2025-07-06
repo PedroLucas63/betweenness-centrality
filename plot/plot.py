@@ -320,7 +320,6 @@ def plot_graph_with_removed(
             plt.show()
 
 
-
 def plot_random_weights(
     graph_sizes,
     times_random_weights,
@@ -339,7 +338,36 @@ def plot_random_weights(
     plt.ylabel('Tempo normalizado')
     plt.title('Complexidade com Pesos Aleatórios')
     
-    plt.yscale('log')  # <- Escala log no eixo X
+    plt.yscale('log')  # <- Escala log no eixo y
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    plt.legend()
+    plt.tight_layout()
+
+    if save_path:
+        plt.savefig(save_path, dpi=300)
+        plt.close()
+    else:
+        plt.show()
+
+
+def plot_all_graph_brandes(resultados_por_tipo: dict, save_path=None):
+    """
+    Plota os tempos normalizados de execução para diferentes tipos de grafos em um único gráfico.
+    """
+    plt.figure(figsize=(10, 6))
+
+    for tipo, resultados in resultados_por_tipo.items():
+        tempos = resultados['random_weights']
+        sizes = resultados['sizes']
+        max_tempo = max(tempos)
+        tempos_norm = [t / max_tempo for t in tempos]
+
+        plt.plot(sizes, tempos_norm, marker='o', linestyle='-', label=tipo.capitalize())
+
+    plt.xlabel('Tamanho do grafo (nós)')
+    plt.ylabel('Tempo normalizado')
+    plt.title('Comparação de Complexidade - Brandes (Pesos Aleatórios)')
+    plt.yscale('log')
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     plt.legend()
     plt.tight_layout()
