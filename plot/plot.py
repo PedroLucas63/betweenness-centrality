@@ -318,3 +318,34 @@ def plot_graph_with_removed(
             plt.close()
         else:
             plt.show()
+
+
+
+def plot_random_weights(
+    graph_sizes,
+    times_random_weights,
+    label='Pesos Aleatórios',
+    save_path=None
+):
+    """
+    Plota gráfico de tempos normalizados para pesos aleatórios apenas com escala logarítmica no eixo X.
+    """
+    norm_random = [t / max(times_random_weights) for t in times_random_weights]
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(graph_sizes, norm_random, marker='s', linestyle='--', label=label, color='orange')
+
+    plt.xlabel('Tamanho do grafo (nós)')
+    plt.ylabel('Tempo normalizado')
+    plt.title('Complexidade com Pesos Aleatórios')
+    
+    plt.yscale('log')  # <- Escala log no eixo X
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    plt.legend()
+    plt.tight_layout()
+
+    if save_path:
+        plt.savefig(save_path, dpi=300)
+        plt.close()
+    else:
+        plt.show()
