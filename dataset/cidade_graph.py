@@ -42,9 +42,9 @@ def load_natal_graph(weight_type: str = 'none') -> nx.MultiDiGraph:
     return G
 
 if __name__ == '__main__':
-    weight_type = 'speed_kph'       # Altere conforme necessário
+    weight_type = 'length'       # Altere conforme necessário
     directed = True              # True = DiGraph, False = Graph
-    G_natal = load_natal_graph(weight_type, directed)
+    G_natal = load_natal_graph(weight_type)
 
     print(f"Grafo carregado com {G_natal.number_of_nodes()} nós e {G_natal.number_of_edges()} arestas.")
 

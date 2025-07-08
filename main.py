@@ -62,7 +62,7 @@ def main():
    with live_timer("netx_to_graph_lib"):
       G = netx_to_graph_lib(G_nx)
    print()
-
+   
    # Estatísticas de peso
    weights = [attrs['weight'] for _, _, attrs in G.edges()]
    weight_min, weight_max = min(weights), max(weights)
@@ -149,6 +149,8 @@ def main():
    common_nodes = list(common_nodes)
    k = max(1, int(len(common_nodes) * 0.001))
    infected = random.sample(common_nodes, k)
+   
+   print("Nós infectados: ", len(infected))
     
    for name, graph in graphs.items():
       print(f"Simulando SIR em: {name}")
