@@ -47,7 +47,7 @@ Este projeto fornece implementações em Python para cálculo de centralidade de
    cd betweenness-centrality
    ```
 
-2. Crie e ative um virtualenv:
+2. Crie e ative um virtualenv (pode variar dependendo do `shell` utilizado):
 
    ```bash
    python -m venv venv
