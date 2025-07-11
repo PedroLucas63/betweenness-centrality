@@ -68,7 +68,7 @@ Este projeto fornece implementações em Python para cálculo de centralidade de
 Executa um fluxo completo para o grafo de Natal (RN):
 
 ```bash
-python -m main
+python main.py
 ```
 
 - Gera `output/imgs/natal.png` (grafo).
