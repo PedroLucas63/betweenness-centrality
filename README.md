@@ -143,4 +143,4 @@ MIT License. Veja o arquivo [LICENSE](LICENSE).
 
 Feito com ❤️ por Gabriel Victor e Pedro Lucas
 
-Email: pedrolucas.jsrn@gmail.com e [ADICIONE SEU EMAIL AQUI - APENAS SE QUISER]
+Email: pedrolucas.jsrn@gmail.com e g.victor.silva01@gmail.com
