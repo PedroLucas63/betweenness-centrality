@@ -1,17 +1,17 @@
 import osmnx as ox
 import networkx as nx
 
-def load_natal_graph(weight_type: str = 'none') -> nx.MultiDiGraph:
+def load_graph(place: str, weight_type: str = 'none') -> nx.MultiDiGraph:
     """
-    Carrega o grafo de Natal-RN com pesos definidos no atributo 'weight'.
+    Carrega o grafo do local especificado com pesos definidos no atributo 'weight'.
 
     Args:
+        place (str): Local para carregar o grafo.
         weight_type (str): 'length', 'travel_time', etc.
 
     Returns:
         nx.MultiDiGraph: Grafo multiaresta com dados geográficos completos e atributo 'weight' definido.
     """
-    place = 'Natal, Rio Grande do Norte, Brazil'
     G = ox.graph_from_place(place, network_type='drive')
 
     if weight_type != 'none':

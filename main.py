@@ -3,7 +3,7 @@ import sys
 import threading
 import random
 
-from dataset.cidade_graph import load_natal_graph
+from dataset.load_graph import load_graph
 from utils.utils import netx_to_graph_lib, remove_nodes
 from plot.plot import (
    plot_graph,
@@ -13,7 +13,6 @@ from plot.plot import (
 )
 from simulations.simulations import simulate_SIR
 import lib.graph_lib as glib
-
 
 class live_timer:
    """
@@ -52,10 +51,10 @@ def main():
 
    # Carrega o grafo
    print('Carregando o grafo de Natal-RN...')
-   with live_timer("load_natal_graph"):
-      G_nx = load_natal_graph('length')
-   plot_graph(G_nx, 'imgs/extend/natal.png', figsize=(20, 20), node_size=10)
-   print(" → imagem 'imgs/extend/natal.png' gerada\n")
+   with live_timer("load_graph"):
+      G_nx = load_graph('Natal, Rio Grande do Norte, Brazil', 'length')
+   plot_graph(G_nx, 'output/imgs/natal.png', figsize=(20, 20), node_size=10)
+   print(" → imagem 'output/imgs/natal.png' gerada\n")
 
    # Converte para graph_lib
    print('Convertendo para graph_lib...')
@@ -85,9 +84,8 @@ def main():
    end_time = time.time()
    dc_time = end_time - start_time
    
-   plot_bars(['Brandes', 'Grau'], [cb_time, dc_time], 'Tempo de execução (s)', 'Comparação de centralidades', 'imgs/extend/times.png')
+   plot_bars(['Brandes', 'Grau'], [cb_time, dc_time], 'Tempo de execução (s)', 'Comparação de centralidades', 'output/imgs/times.png')
    
-
    # Define percentuais
    total_nodes = G.size()
    k10 = max(1, total_nodes // 10)   # 10%
@@ -108,11 +106,11 @@ def main():
 
    # Plot subgrafos removidos
    print('Plotando subgrafos...')
-   plot_graph_with_removed(G_nx, cb_top_10,  'imgs/extend/brandes_10.png', figsize=(20,20), node_size=10)
-   plot_graph_with_removed(G_nx, dc_top_10,   'imgs/extend/grau_10.png',    figsize=(20,20), node_size=10)
-   plot_graph_with_removed(G_nx, mixed_top,   'imgs/extend/mixed_10.png',   figsize=(20,20), node_size=10)
-   plot_graph_with_removed(G_nx, random_top,  'imgs/extend/random_10.png',   figsize=(20,20), node_size=10)
-   print(" → imagens de remoção salvas em 'imgs/extend/'\n")
+   plot_graph_with_removed(G_nx, cb_top_10,  'output/imgs/brandes_10.png', figsize=(20,20), node_size=10)
+   plot_graph_with_removed(G_nx, dc_top_10,   'output/imgs/grau_10.png',    figsize=(20,20), node_size=10)
+   plot_graph_with_removed(G_nx, mixed_top,   'output/imgs/mixed_10.png',   figsize=(20,20), node_size=10)
+   plot_graph_with_removed(G_nx, random_top,  'output/imgs/random_10.png',   figsize=(20,20), node_size=10)
+   print(" → imagens de remoção salvas em 'output/imgs/'\n")
 
    # Quanto restou em cada abordagem
    remaining_counts = {
@@ -127,9 +125,9 @@ def main():
       list(remaining_counts.values()),
       'Nós',
       'Comparação de nós por abordagem',
-      'imgs/extend/nodes_counts.png'
+      'output/imgs/nodes_counts.png'
    )
-   print(" → comparação de nós restantes salva em 'imgs/extend/nodes_counts.png'\n")
+   print(" → comparação de nós restantes salva em 'output/imgs/nodes_counts.png'\n")
 
    # Simulações SIR
    graphs = {
@@ -167,8 +165,8 @@ def main():
       print(f" → Simulação {name} concluída\n")
 
    # Plot final comparação SIR
-   plot_SIR_comparison(results, 'imgs/extend')
-   print("Comparação SIR gerada em 'imgs/extend/'")
+   plot_SIR_comparison(results, 'output/imgs')
+   print("Comparação SIR gerada em 'output/imgs/'")
 
 
 if __name__ == "__main__":

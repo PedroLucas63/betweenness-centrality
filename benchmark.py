@@ -36,12 +36,12 @@ class live_timer:
 
 
 def main():
-    os.makedirs('imgs/brandes', exist_ok=True)
+    os.makedirs('output/imgs/brandes', exist_ok=True)
 
     graph_sizes = [50, 100, 200, 300, 400, 500, 1000, 1500, 2000, 3000]
     num_repeats = 3
     seed = 42
-    folder = 'imgs/brandes'
+    folder = 'output/imgs/brandes'
     tipos_grafo = ['erdos', 'planar']
 
     resultados_todos = {}
@@ -75,7 +75,7 @@ def main():
         resultados_por_tipo=resultados_todos,
         save_path=f'{folder}/brandes_comparativo_todos.png'
     )
-    print(" → Comparação salva em 'imgs/brandes/brandes_comparativo_todos.png'\n")
+    print(" → Comparação salva em 'output/imgs/brandes/brandes_comparativo_todos.png'\n")
 
 if __name__ == "__main__":
     main()
